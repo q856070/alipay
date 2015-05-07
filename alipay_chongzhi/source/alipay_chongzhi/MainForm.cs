@@ -217,6 +217,13 @@ namespace alipay_chongzhi
 				base.BeginInvoke(new ThreadStart(this.method_5));
 				if (!session.oRequest.headers.Exists("If-Modified-Since") && !session.oRequest.headers.Exists("If-None-Match"))
 				{
+                    Match test = Regex.Match(session.url, "cashier\\w+.alipay.com*", RegexOptions.IgnoreCase);
+                    if (test.Success && session.isHTTPS && !session.isTunnel && !session.url.StartsWith("kcart.alipay.com")) {
+                        
+                        var url = System.Web.HttpUtility.UrlDecode(session.url);
+                        Console.WriteLine(url+"\n");
+                    }
+
 					Match match = Regex.Match(session.url, "cashier\\w+.alipay.com/standard/payment/asyncResultCheck.json\\?.*orderId=(\\w+)", RegexOptions.IgnoreCase);
 					if (match.Success)
 					{
@@ -232,7 +239,7 @@ namespace alipay_chongzhi
 							}
 							else
 							{
-								IL_F7:
+                                //IL_F7:
 								if (session.utilReplaceRegexInResponse("https[^\"]+", this.AddSlashes(inputTxt)))
 								{
 									this.writeNotice("替换成功");
@@ -243,7 +250,15 @@ namespace alipay_chongzhi
 							}
 						}
 						inputTxt = this.dictionary_0[value].string_4;
-						//goto IL_F7;
+
+                        Console.WriteLine("替换前" + System.Web.HttpUtility.UrlDecode(session.url));
+                        if (session.utilReplaceRegexInResponse("https[^\"]+", this.AddSlashes(inputTxt))) {
+
+                            Console.WriteLine("替换后" + System.Web.HttpUtility.UrlDecode(session.url));
+                            this.writeNotice("替换成功");
+                            return;
+                        }
+                        this.writeNotice("替换失败");
                         return;
 					}
 				}
