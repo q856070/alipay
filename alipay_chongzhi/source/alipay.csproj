@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>WinExe</OutputType>
-    <AssemblyName>alipay_chongzhi</AssemblyName>
+    <AssemblyName>alipay</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -24,15 +24,20 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FiddlerCore, Version=2.4.8.4, Culture=neutral, PublicKeyToken=67cb91587178ac5a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Test\C#\Libs\FiddlerCore.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="FiddlerCore">
-      <HintPath>.\FiddlerCore.dll</HintPath>
-    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="-Module-{887C6642-6FD8-4ACD-98EF-312D57F78CAE}.cs" />
@@ -79,6 +84,7 @@
     <Compile Include="LitJson\JsonType.cs" />
     <Compile Include="LitJson\JsonWriter.cs" />
     <Compile Include="LitJson\WrapperFactory.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Struct0.cs" />
     <Compile Include="Struct1.cs" />
     <Compile Include="Struct2.cs" />
@@ -86,9 +92,16 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="alipay_chongzhi.Properties\Resources.resources" />
-    <EmbeddedResource Include="alipay_chongzhi\MainForm.resources" />
+    <EmbeddedResource Include="alipay_chongzhi\MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="aR3nbf8dQp2feLmk31.lSfgApatkdxsVcGcrktoFd.resources" />
     <EmbeddedResource Include="aR3nbf8dQp2feLmk31.SplashForm.resources" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="config.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
