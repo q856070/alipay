@@ -19,6 +19,10 @@ namespace alipay_chongzhi {
 
         static Dictionary<string, OrderInfo> _OrderDic = new Dictionary<string, OrderInfo>();
         /// <summary>
+        /// 是否从订单字典中读取
+        /// </summary>
+        public bool _EnabledReadFromDic = true;
+        /// <summary>
         /// 替换之后的订单信息
         /// </summary>
         class OrderInfo {
@@ -123,15 +127,21 @@ namespace alipay_chongzhi {
                     } else {
                         base.Show();
                     }
-                } else {
-                    if (Class13.GlobalAddAtom("StartHotKey") == m.WParam.ToInt32() && FiddlerApplication.IsStarted()) {
-                        if (FiddlerApplication.oProxy.IsAttached) {
-                            this.writeNotice("关闭功能");
-                            FiddlerApplication.oProxy.Detach();
-                        } else {
-                            this.writeNotice("开启功能");
-                            FiddlerApplication.oProxy.Attach();
-                        }
+                } else if (Class13.GlobalAddAtom("StartHotKey") == m.WParam.ToInt32() && FiddlerApplication.IsStarted()) {
+                    if (FiddlerApplication.oProxy.IsAttached) {
+                        this.writeNotice("关闭功能");
+                        FiddlerApplication.oProxy.Detach();
+                    } else {
+                        this.writeNotice("开启功能");
+                        FiddlerApplication.oProxy.Attach();
+                    }
+                } else if (Class13.GlobalAddAtom("EnabledReadFromDic") == m.WParam.ToInt32()) {
+                    if (this._EnabledReadFromDic) {
+                        this.writeNotice("关闭内存读取替换");
+                        this._EnabledReadFromDic = false;
+                    } else {
+                        this.writeNotice("开启内存读取替换");
+                        this._EnabledReadFromDic = true;
                     }
                 }
             }
@@ -180,6 +190,7 @@ namespace alipay_chongzhi {
             if (!string.IsNullOrEmpty(text) || !string.IsNullOrEmpty(text)) {
                 this.RegHotKey_Btn_Click(null, null);
             }
+            this._EnabledReadFromDic = true; //默认从订单字典中读取
             DeleteOrder();
         }
         private void BeforeRequest(Session session) {
@@ -256,7 +267,7 @@ namespace alipay_chongzhi {
 
                     OrderInfo order = null;
                     //判断是否存在该url
-                    if (_OrderDic.ContainsKey(session.url)) {
+                    if (_OrderDic.ContainsKey(session.url) && this._EnabledReadFromDic) {
                         //订单有效时间大约小时
                         if ((DateTime.Now - _OrderDic[session.url].AddTime).Seconds < 3600) {
                             Console.WriteLine("存在相同的form");
@@ -286,7 +297,7 @@ namespace alipay_chongzhi {
                     Match formMatch = Regex.Match(html, formRegexExpression, RegexOptions.IgnoreCase);
                     if (formMatch.Success) {
                         string form = order.FormHrml = formMatch.Value;
-                        _OrderDic.Add(session.url, order);
+                        _OrderDic[session.url] = order;
                         Console.WriteLine("添加成功");
                     }
                 }
@@ -668,6 +679,11 @@ namespace alipay_chongzhi {
                     }
                     this.RegHotKey_Btn.Enabled = enabled;
                 }
+            }
+            if (Class13.RegisterHotKey(base.Handle, Class13.GlobalAddAtom("EnabledReadFromDic"), this.class5_1.uint_0, Keys.C)) {
+                //this.writeNotice("开启内存读取替换成功");
+            } else {
+                this.writeNotice("开启内存读取替换失败");
             }
         }
         protected override void Dispose(bool disposing) {
