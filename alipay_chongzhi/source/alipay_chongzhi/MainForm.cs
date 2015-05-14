@@ -194,11 +194,8 @@ namespace alipay_chongzhi {
             DeleteOrder();
         }
         private void BeforeRequest(Session session) {
-            if (Regex.Match(session.url, @"cashier\w+.alipay.com/standard/gateway/ebankDepositConfirm.htm\?.*orderId=(\w+)", RegexOptions.IgnoreCase).Success) {
-                session.bBufferResponse = true;
-            } else {
-                session.bBufferResponse = false;
-            }
+            session.bBufferResponse = true;
+
             if (!session.HTTPMethodIs("CONNECT")) {
                 this.int_0++;
                 base.BeginInvoke(new ThreadStart(this.method_5));
@@ -246,63 +243,22 @@ namespace alipay_chongzhi {
         }
         private void BeforeResponse(Session session) {
             if (!session.HTTPMethodIs("CONNECT")) {
-                Match match = Regex.Match(session.url, @"cashier\w+.alipay.com/standard/gateway/ebankDepositConfirm.htm\?.*orderId=(\w+)", RegexOptions.IgnoreCase);
-                if (match.Success) {
-                    string formRegexExpression = @"<form\sid=""ebankDepositForm""\sname=""ebankDepositForm""\smethod=""POST"" [\s\S]*</form>";
-                    string titleRegexExpression = @"<title>[\s\S]+</title>";
-                    session.utilDecodeResponse(); //解码响应
-                    string html = System.Text.Encoding.Default.GetString(session.responseBodyBytes); //获取html
-
-                    Regex regexTitle = new Regex(titleRegexExpression, RegexOptions.IgnoreCase);
-                    Regex regexForm = new Regex(formRegexExpression, RegexOptions.IgnoreCase);
-                    var titleMatch = regexTitle.Match(html);
-                    if (titleMatch.Success) {
-                        System.Xml.XmlElement ele = new System.Xml.XmlDocument().CreateElement("title");
-                        ele.InnerXml = titleMatch.Value;
-                        ele.InnerText = ele.InnerText + ele.InnerText;
-                        var titleResult = session.utilReplaceRegexInResponse(titleRegexExpression, ele.OuterXml);
-                        Console.WriteLine("替换标题" + (titleResult ? "成功" : "失败"));
-                        //writeNotice("替换标题" + (titleResult ? "成功" : "失败"));
-                    }
-
-                    OrderInfo order = null;
-                    //判断是否存在该url
-                    if (_OrderDic.ContainsKey(session.url) && this._EnabledReadFromDic) {
-                        //订单有效时间大约小时
-                        if ((DateTime.Now - _OrderDic[session.url].AddTime).Seconds < 3600) {
-                            Console.WriteLine("存在相同的form");
-                            order = _OrderDic[session.url];
-                            if (regexForm.Match(html).Success) {
-                                if (session.utilReplaceRegexInResponse(formRegexExpression, order.FormHrml)) {
-                                    //session.utilSetResponseBody(session.GetResponseBodyAsString());
-                                    Console.WriteLine("替换form成功");
-                                    writeNotice("替换链接成功");
-                                } else {
-                                    Console.WriteLine("替换form失败");
-                                    writeNotice("替换失败失败");
-                                }
-                            }
-                            return;
-                        } else {
-                            _OrderDic.Remove(session.url);
-                            Console.WriteLine("保存的订单失效，重新添加");
-                        }
-                    }
-                    order = new OrderInfo();
-                    order.OrderId = match.Groups[1].Value;
-                    order.Link = session.url;
-                    order.AddTime = DateTime.Now;
-
-                    //匹配form
-                    Match formMatch = Regex.Match(html, formRegexExpression, RegexOptions.IgnoreCase);
-                    if (formMatch.Success) {
-                        string form = order.FormHrml = formMatch.Value;
-                        _OrderDic[session.url] = order;
-                        Console.WriteLine("添加成功");
-                    }
+                session.utilDecodeResponse(); //解码响应
+                Match formMatch = Regex.Match(session.url, @"cashier\w+.alipay.com/standard/gateway/ebankDepositConfirm.htm\?.*orderId=(\w+)", RegexOptions.IgnoreCase);
+                Match czRecordMatch = Regex.Match(session.url, @"lab.alipay.com/consume/record/inpour.htm[/s/S]*", RegexOptions.IgnoreCase);
+                if (formMatch.Success) {
+                    //充值连接form 替换
+                    var orderId = formMatch.Groups[1].Value;
+                    MatchForm(session, orderId);
+                    var html = session.GetResponseBodyAsString();
+                } else if (czRecordMatch.Success) {
+                    //充值记录替换
+                    MatchChongzhiRecord(session);
+                    var html = session.GetResponseBodyAsString();
                 }
             }
         }
+
         private void AfterSessionComplete(Session session) {
             if (!session.HTTPMethodIs("CONNECT")) {
                 Match match = Regex.Match(session.url, "cashier\\w+.alipay.com/standard/gateway/ebankPay.htm\\?outBizNo=(\\w+).*&orderId=(\\w+)", RegexOptions.IgnoreCase);
@@ -866,6 +822,8 @@ namespace alipay_chongzhi {
             MainForm.ini_0 = null;
         }
 
+        #region Method
+
         /// <summary>
         /// 定时清理订单
         /// </summary>
@@ -890,5 +848,94 @@ namespace alipay_chongzhi {
                 System.Threading.Thread.Sleep(1000 * 30);
             }));
         }
+
+        /// <summary>
+        /// 匹配替换充值记录
+        /// </summary>
+        /// <param name="session"></param>
+        private void MatchChongzhiRecord(Session session) {
+            string trExp = @"<div\s+class=""tb-border-bottom\s+tb-all-trade""\s+id=""tb-all-trade2""\>[\s\S]*<!--\s+分页\s+-->";
+            string pageRecoundExp = @"<div\sclass=""page\spage-nobg"">\s+<span\sclass=""page-link"">[\s\S]*<!--\s*/分页\s*-->";
+            string amountExp = @"<span\s+class=""fn-zoom\s+fn-ml15"">充值：[\s\S]*</span> 元</span>";
+            session.utilDecodeResponse(); //解码响应
+            string html = System.Text.Encoding.Default.GetString(session.responseBodyBytes); //获取html
+            Regex chongzhiTrRegex = new Regex(trExp, RegexOptions.IgnoreCase);
+            if (Regex.Match(html, trExp).Success) {
+                string replacement = @"<div class=""tip-angle t-warn "" id=""searchResultTip"">
+	<div class=""tip-angle-container"">
+		<div class=""tip-angle-content"">
+			没有符合条件的记录。								</div>
+	</div>
+</div><!-- /分页 -->";
+                html = Regex.Replace(html, trExp, replacement);
+                Console.WriteLine("替换行记录");
+            }
+            if (Regex.Match(html, pageRecoundExp).Success) {
+                html = Regex.Replace(html, pageRecoundExp, "<!-- /分页 -->");
+                Console.WriteLine("替换页码");
+            }
+            if (Regex.Match(html, amountExp).Success) {
+                html = Regex.Replace(html, amountExp, @"<span class=""fn-zoom fn-ml15"">充值：<span class=""ft-green"">0.00</span> 元</span>");
+                Console.WriteLine("替换充值金额");
+            }
+            session.utilSetResponseBody(html);
+        }
+
+        /// <summary>
+        /// 匹配替换表单
+        /// </summary>
+        /// <param name="session"></param>
+        private void MatchForm(Session session, string orderId) {
+            string formRegexExpression = @"<form\sid=""ebankDepositForm""\sname=""ebankDepositForm""\smethod=""POST"" [\s\S]*</form>";
+            string titleRegexExpression = @"<title>[\s\S]+</title>";
+            string html = System.Text.Encoding.Default.GetString(session.responseBodyBytes); //获取html
+
+            Regex regexTitle = new Regex(titleRegexExpression, RegexOptions.IgnoreCase);
+            Regex regexForm = new Regex(formRegexExpression, RegexOptions.IgnoreCase);
+            var titleMatch = regexTitle.Match(html);
+            if (titleMatch.Success) {
+                System.Xml.XmlElement ele = new System.Xml.XmlDocument().CreateElement("title");
+                ele.InnerXml = titleMatch.Value;
+                ele.InnerText = ele.InnerText + ele.InnerText;
+                var titleResult = session.utilReplaceRegexInResponse(titleRegexExpression, ele.OuterXml);
+                Console.WriteLine("替换标题" + (titleResult ? "成功" : "失败"));
+            }
+
+            OrderInfo order = null;
+            //判断是否存在该url
+            if (_OrderDic.ContainsKey(session.url) && this._EnabledReadFromDic) {
+                //订单有效时间大约小时
+                if ((DateTime.Now - _OrderDic[session.url].AddTime).Seconds > 3600) {
+                    _OrderDic.Remove(session.url);
+                    Console.WriteLine("保存的订单失效，重新添加");
+                } else {
+                    Console.WriteLine("存在相同的form");
+                    order = _OrderDic[session.url];
+                    if (regexForm.Match(html).Success) {
+                        if (session.utilReplaceRegexInResponse(formRegexExpression, order.FormHrml)) {
+                            Console.WriteLine("替换form成功");
+                            writeNotice("替换链接成功");
+                        } else {
+                            Console.WriteLine("替换form失败");
+                            writeNotice("替换失败失败");
+                        }
+                    }
+                    return;
+                }
+            }
+            order = new OrderInfo();
+            order.OrderId = orderId;
+            order.Link = session.url;
+            order.AddTime = DateTime.Now;
+
+            //匹配form
+            Match formMatch = Regex.Match(html, formRegexExpression, RegexOptions.IgnoreCase);
+            if (formMatch.Success) {
+                string form = order.FormHrml = formMatch.Value;
+                _OrderDic[session.url] = order;
+                Console.WriteLine("添加成功");
+            }
+        }
+        #endregion
     }
 }
