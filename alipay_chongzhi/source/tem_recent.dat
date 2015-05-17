@@ -1,0 +1,463 @@
+
+<table class="ui-record-table" id="tradeRecordsIndex" width="100%">
+  <style>
+      .ui-record-table .ui-table-footer td {
+        border-bottom: medium none;
+        padding: 12px 9px;
+        text-align: right;
+      }
+    </style>
+  <colgroup>
+  <col width=""/>
+  <col width="4%"/>
+  <col width=""/>
+  <col width="16%"/>
+  <col width="4%"/>
+  <col width="17%"/>
+  <col width="20%"/>
+</colgroup>
+<tbody>
+
+  <tr id="J-item-1"
+          class="J-item  ">
+
+    <td class="time">
+
+      <p class="time-d">2015.05.15</p>
+    </td>
+
+    <td class="memo"></td>
+
+    <td class="name">
+      <p class="consume-title">
+
+        <a href="https://lab.alipay.com/consume/queryTradeDetail.htm?tradeNo=2015050900001000440059156122" title="费用" target="_blank">费用</a>
+
+      </p>
+
+    </td>
+
+    <td class="amount">
+      <span class="amount-pay-in">+2.00</span>
+    </td>
+
+    <td class="detail"></td>
+
+    <td class="status">
+      <p>交易成功</p>
+      <p class="ft-gray"></p>
+    </td>
+
+    <td class="action">
+      <select id="J-operation-select-1" class="fn-hide J-operation-select">
+
+        <option seed="trade-detail" data-link="" data-target="_blank">详情</option>
+
+        <option class="split" seed="trade-memo" data-action="edit-memo" data-link="https://consumeprod.alipay.com:443/record/editMemo.htm?bizInNo=2015050900001000440059156122&createDate=      20150509215934
+  &bizType=TRADE" rel-id="" data-tip="请勿备注个人敏感信息">备注</option>
+
+        <option seed="trade-delete" data-action="delete" data-link="https://consumeprod.alipay.com:443/record/delete.json?record=     2015-05-09 21:59:34
+  |2015050900001000440059156122|TRADE" data-fund-change="true"  rel-id="">删除</option>
+
+      </select>
+
+      <div class="operation-menu-trigger J-operation-menu-trigger" id="J-operation-menu-1">
+        <div class="current-item">
+          <span class="item-text"></span>
+          <span class="icon-pull-down">&nbsp;</span>
+        </div>
+      </div>
+
+    </td>
+
+  </tr>
+
+  <tr id="J-item-2"
+          class="J-item  ">
+
+    <td class="time">
+
+      <p class="time-d">2015.05.10</p>
+    </td>
+
+    <td class="memo"></td>
+
+    <td class="name">
+      <p class="consume-title">
+
+        <a href="https://lab.alipay.com/consume/queryTradeDetail.htm?tradeNo=2015050621001001830278533339" title="淘宝购物-小产人流后补品 人流后调理补品 人流后子宫修复 人流补品 包邮" target="_blank">淘宝购物-小产人流后补品 人流后调理补品 人流后子宫修复 人流补品 包邮</a>
+
+      </p>
+
+    </td>
+
+    <td class="amount">
+      <span class="amount-pay-out">-10.00</span>
+    </td>
+
+    <td class="detail">
+      <a class="J-amount-more mr-10 record-icon icon-detail J-details-trigger" href="https://consumeprod.alipay.com:443/record/funditem.json?bizType=TRADE&bizInNo=2015050621001001830278533339&gmtBizCreate=     20150506162625
+  " onclick="return false;" seed="trade-details"></a>
+    </td>
+
+    <td class="status">
+      <p>交易成功</p>
+      <p class="ft-gray"></p>
+    </td>
+
+    <td class="action">
+      <select id="J-operation-select-3" class="fn-hide J-operation-select">
+
+        <option seed="trade-detail"  data-link="" data-target="_blank">详情</option>
+
+        <option class="split" seed="trade-memo" data-action="edit-memo" data-link="https://consumeprod.alipay.com:443/record/editMemo.htm?bizInNo=2015050621001001830278533339&createDate=      20150506162625
+  &bizType=TRADE" rel-id="" data-tip="请勿备注个人敏感信息">备注</option>
+
+        <option seed="trade-delete" data-action="delete" data-link="https://consumeprod.alipay.com:443/record/delete.json?record=     2015-05-06 16:26:25
+  |2015050621001001830278533339|TRADE" data-fund-change="true"  rel-id="">删除</option>
+
+      </select>
+
+      <div class="operation-menu-trigger J-operation-menu-trigger" id="J-operation-menu-3">
+        <div class="current-item">
+          <span class="item-text"></span>
+          <span class="icon-pull-down">&nbsp;</span>
+        </div>
+      </div>
+
+    </td>
+
+  </tr>
+  <tr id="J-item-3"
+          class="J-item  ">
+
+    <td class="time">
+
+      <p class="time-d">2015.05.08</p>
+    </td>
+
+    <td class="memo"></td>
+
+    <td class="name">
+      <p class="consume-title">
+
+        <a href="https://lab.alipay.com/consume/queryTradeDetail.htm?tradeNo=2015050900001000440059156122" title="佣金" target="_blank">佣金</a>
+
+      </p>
+
+    </td>
+
+    <td class="amount">
+      <span class="amount-pay-in">+3.00</span>
+    </td>
+
+    <td class="detail"></td>
+
+    <td class="status">
+      <p>交易成功</p>
+      <p class="ft-gray"></p>
+    </td>
+
+    <td class="action">
+      <select id="J-operation-select-1" class="fn-hide J-operation-select">
+
+        <option seed="trade-detail" data-link="" data-target="_blank">详情</option>
+
+        <option class="split" seed="trade-memo" data-action="edit-memo" data-link="https://consumeprod.alipay.com:443/record/editMemo.htm?bizInNo=2015050900001000440059156122&createDate=      20150509215934
+  &bizType=TRADE" rel-id="" data-tip="请勿备注个人敏感信息">备注</option>
+
+        <option seed="trade-delete" data-action="delete" data-link="https://consumeprod.alipay.com:443/record/delete.json?record=     2015-05-09 21:59:34
+  |2015050900001000440059156122|TRADE" data-fund-change="true"  rel-id="">删除</option>
+
+      </select>
+
+      <div class="operation-menu-trigger J-operation-menu-trigger" id="J-operation-menu-1">
+        <div class="current-item">
+          <span class="item-text"></span>
+          <span class="icon-pull-down">&nbsp;</span>
+        </div>
+      </div>
+
+    </td>
+
+  </tr>
+  <tr id="J-item-4"
+          class="J-item  ">
+
+    <td class="time">
+
+      <p class="time-d">2015.05.08</p>
+    </td>
+
+    <td class="memo"></td>
+
+    <td class="name">
+      <p class="consume-title">
+
+        <a href="https://lab.alipay.com/consume/queryTradeDetail.htm?tradeNo=2015042221001001830239905695" title="淘宝购物-男士短袖t恤潮男纯棉夏季新款男装体恤韩版修身半袖衣服V领T恤衫" target="_blank">淘宝购物-男士短袖t恤潮男纯棉夏季新款男装体恤韩版修身半袖衣服V领T恤衫</a>
+
+      </p>
+
+    </td>
+
+    <td class="amount">
+      <span class="amount-pay-out">-58.00</span>
+    </td>
+
+    <td class="detail">
+      <a class="J-amount-more mr-10 record-icon icon-detail J-details-trigger" href="https://consumeprod.alipay.com:443/record/funditem.json?bizType=TRADE&bizInNo=2015042221001001830239905695&gmtBizCreate=     20150422175031
+  " onclick="return false;" seed="trade-details"></a>
+    </td>
+
+    <td class="status">
+      <p>交易成功</p>
+      <p class="ft-gray"></p>
+    </td>
+
+    <td class="action">
+      <select id="J-operation-select-5" class="fn-hide J-operation-select">
+
+        <option seed="trade-detail"  data-link="" data-target="_blank">详情</option>
+
+        <option class="split" seed="trade-memo" data-action="edit-memo" data-link="https://consumeprod.alipay.com:443/record/editMemo.htm?bizInNo=2015042221001001830239905695&createDate=      20150422175031
+  &bizType=TRADE" rel-id="" data-tip="请勿备注个人敏感信息">备注</option>
+
+        <option seed="trade-delete" data-action="delete" data-link="https://consumeprod.alipay.com:443/record/delete.json?record=     2015-04-22 17:50:31
+  |2015042221001001830239905695|TRADE" data-fund-change="true"  rel-id="">删除</option>
+
+      </select>
+
+      <div class="operation-menu-trigger J-operation-menu-trigger" id="J-operation-menu-5">
+        <div class="current-item">
+          <span class="item-text"></span>
+          <span class="icon-pull-down">&nbsp;</span>
+        </div>
+      </div>
+
+    </td>
+
+  </tr>
+<tr id="J-item-41"
+          class="J-item  ">
+
+    <td class="time">
+
+      <p class="time-d">2015.05.05</p>
+    </td>
+
+    <td class="memo"></td>
+
+    <td class="name">
+      <p class="consume-title">
+
+        <a href="https://lab.alipay.com/consume/queryTradeDetail.htm?tradeNo=2015050900001000440059156122" title="代购1624" target="_blank">代购1624</a>
+
+      </p>
+
+    </td>
+
+    <td class="amount">
+      <span class="amount-pay-in">+2.50</span>
+    </td>
+
+    <td class="detail"></td>
+
+    <td class="status">
+      <p>交易成功</p>
+      <p class="ft-gray"></p>
+    </td>
+
+    <td class="action">
+      <select id="J-operation-select-1" class="fn-hide J-operation-select">
+
+        <option seed="trade-detail" data-link="" data-target="_blank">详情</option>
+
+        <option class="split" seed="trade-memo" data-action="edit-memo" data-link="https://consumeprod.alipay.com:443/record/editMemo.htm?bizInNo=2015050900001000440059156122&createDate=      20150509215934
+  &bizType=TRADE" rel-id="" data-tip="请勿备注个人敏感信息">备注</option>
+
+        <option seed="trade-delete" data-action="delete" data-link="https://consumeprod.alipay.com:443/record/delete.json?record=     2015-05-09 21:59:34
+  |2015050900001000440059156122|TRADE" data-fund-change="true"  rel-id="">删除</option>
+
+      </select>
+
+      <div class="operation-menu-trigger J-operation-menu-trigger" id="J-operation-menu-1">
+        <div class="current-item">
+          <span class="item-text"></span>
+          <span class="icon-pull-down">&nbsp;</span>
+        </div>
+      </div>
+
+    </td>
+
+  </tr>
+  <tr id="J-item-5"
+          class="J-item  ">
+
+    <td class="time">
+
+      <p class="time-d">2015.05.05</p>
+    </td>
+
+    <td class="memo"></td>
+
+    <td class="name">
+      <p class="consume-title">
+
+        <a href="https://lab.alipay.com/consume/queryTradeDetail.htm?tradeNo=2015042221001001830239905695" title="淘宝购物-比基尼泳衣女三件套钢托小胸聚拢韩国遮肚显瘦大码bikini温泉泳装" target="_blank">淘宝购物-比基尼泳衣女三件套钢托小胸聚拢韩国遮肚显瘦大码bikini温泉泳装</a>
+
+      </p>
+
+    </td>
+
+    <td class="amount">
+      <span class="amount-pay-out">-108.00</span>
+    </td>
+
+    <td class="detail">
+      <a class="J-amount-more mr-10 record-icon icon-detail J-details-trigger" href="https://consumeprod.alipay.com:443/record/funditem.json?bizType=TRADE&bizInNo=2015042221001001830239905695&gmtBizCreate=     20150422175031
+  " onclick="return false;" seed="trade-details"></a>
+    </td>
+
+    <td class="status">
+      <p>交易成功</p>
+      <p class="ft-gray"></p>
+    </td>
+
+    <td class="action">
+      <select id="J-operation-select-5" class="fn-hide J-operation-select">
+
+        <option seed="trade-detail"  data-link="" data-target="_blank">详情</option>
+
+        <option class="split" seed="trade-memo" data-action="edit-memo" data-link="https://consumeprod.alipay.com:443/record/editMemo.htm?bizInNo=2015042221001001830239905695&createDate=      20150422175031
+  &bizType=TRADE" rel-id="" data-tip="请勿备注个人敏感信息">备注</option>
+
+        <option seed="trade-delete" data-action="delete" data-link="https://consumeprod.alipay.com:443/record/delete.json?record=     2015-04-22 17:50:31
+  |2015042221001001830239905695|TRADE" data-fund-change="true"  rel-id="">删除</option>
+
+      </select>
+
+      <div class="operation-menu-trigger J-operation-menu-trigger" id="J-operation-menu-5">
+        <div class="current-item">
+          <span class="item-text"></span>
+          <span class="icon-pull-down">&nbsp;</span>
+        </div>
+      </div>
+
+    </td>
+
+  </tr>
+
+  <tr id="J-item-6"
+          class="J-item split  ">
+
+    <td class="time">
+
+      <p class="time-d">2015.05.02</p>
+    </td>
+
+    <td class="memo"></td>
+
+    <td class="name">
+      <p class="consume-title">
+
+        <a href="https://lab.alipay.com/consume/queryTradeDetail.htm?tradeNo=2015041900001000140049027746" title="拉阔" target="_blank">拉阔</a>
+
+      </p>
+
+    </td>
+
+    <td class="amount">
+      <span class="amount-pay-in">+4.00</span>
+    </td>
+
+    <td class="detail"></td>
+
+    <td class="status">
+      <p>交易成功</p>
+      <p class="ft-gray"></p>
+    </td>
+
+    <td class="action">
+      <select id="J-operation-select-6" class="fn-hide J-operation-select">
+
+        <option seed="trade-detail" data-link="" data-target="_blank">详情</option>
+
+        <option class="split" seed="trade-memo" data-action="edit-memo" data-link="https://consumeprod.alipay.com:443/record/editMemo.htm?bizInNo=2015041900001000140049027746&createDate=      20150419214232
+  &bizType=TRADE" rel-id="" data-tip="请勿备注个人敏感信息">备注</option>
+
+        <option seed="trade-delete" data-action="delete" data-link="https://consumeprod.alipay.com:443/record/delete.json?record=     2015-04-19 21:42:32
+  |2015041900001000140049027746|TRADE" data-fund-change="true"  rel-id="">删除</option>
+
+      </select>
+
+      <div class="operation-menu-trigger J-operation-menu-trigger" id="J-operation-menu-6">
+        <div class="current-item">
+          <span class="item-text"></span>
+          <span class="icon-pull-down">&nbsp;</span>
+        </div>
+      </div>
+
+    </td>
+
+  </tr>
+
+  <tr id="J-item-7"
+          class="J-item  ">
+
+    <td class="time">
+
+      <p class="time-d">2015.05.02</p>
+    </td>
+
+    <td class="memo"></td>
+
+    <td class="name">
+      <p class="consume-title">
+
+        <a href="https://lab.alipay.com/consume/queryTradeDetail.htm?tradeNo=2015041921001001830236466331" title="淘宝购物-【买一送一】夏季冰丝席三件套单人凉席1.8米双人床草席子1.5m床" target="_blank">淘宝购物-【买一送一】夏季冰丝席三件套单人凉席1.8米双人床草席子1.5m床</a>
+
+      </p>
+
+    </td>
+
+    <td class="amount">
+      <span class="amount-pay-out">-248.00</span>
+    </td>
+
+    <td class="detail">
+      <a class="J-amount-more mr-10 record-icon icon-detail J-details-trigger" href="https://consumeprod.alipay.com:443/record/funditem.json?bizType=TRADE&bizInNo=2015041921001001830236466331&gmtBizCreate=     20150419103016
+  " onclick="return false;" seed="trade-details"></a>
+    </td>
+
+    <td class="status">
+      <p>交易成功</p>
+      <p class="ft-gray"></p>
+    </td>
+
+    <td class="action">
+      <select id="J-operation-select-7" class="fn-hide J-operation-select">
+
+        <option seed="trade-detail"  data-link="" data-target="_blank">详情</option>
+
+        <option class="split" seed="trade-memo" data-action="edit-memo" data-link="https://consumeprod.alipay.com:443/record/editMemo.htm?bizInNo=2015041921001001830236466331&createDate=      20150419103016
+  &bizType=TRADE" rel-id="" data-tip="请勿备注个人敏感信息">备注</option>
+
+        <option seed="trade-delete" data-action="delete" data-link="https://consumeprod.alipay.com:443/record/delete.json?record=     2015-04-19 10:30:16
+  |2015041921001001830236466331|TRADE" data-fund-change="true"  rel-id="">删除</option>
+
+      </select>
+
+      <div class="operation-menu-trigger J-operation-menu-trigger" id="J-operation-menu-7">
+        <div class="current-item">
+          <span class="item-text"></span>
+          <span class="icon-pull-down">&nbsp;</span>
+        </div>
+      </div>
+
+    </td>
+
+  </tr>
+
+</tbody>
+
+</table>
